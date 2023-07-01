@@ -224,14 +224,36 @@ int main(){
                     );
                 }
             }else{
-                n->setInput(encode(board));
+                if(player == 1){
+                    n->changeKingInput(
+                        wKing.row,
+                        wKing.col,
+                        bKing.row,
+                        bKing.col,
+                        tRow,
+                        tCol,
+                        fRow,
+                        fCol
+                    );
+                }else{
+                    n->changeKingInput(
+                        bKing.row,
+                        bKing.col,
+                        wKing.row,
+                        wKing.col,
+                        tRow,
+                        tCol,
+                        fRow,
+                        fCol
+                    );
+                }
             }
 
             printBoard(board);
-            auto start = chrono::steady_clock::now();
+            // auto start = chrono::steady_clock::now();
             int16_t nOutput = n->getOutput();
-            auto end = chrono::steady_clock::now();
-            auto time = chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            // auto end = chrono::steady_clock::now();
+            // auto time = chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
             int16_t variation = abs(nOutput)-abs(output);
             if(variation < 60 && variation > -60){
                 if(player == 1){
@@ -270,7 +292,7 @@ int main(){
                 cout << "Bad ";
             }
             cout << "move from " << output << " to " << nOutput << '\n';
-            cout << "Elapsed(ns) = " << time << " for NNUE evaluation\n";
+            // cout << "Elapsed(ns) = " << time << " for NNUE evaluation\n";
             output = nOutput;
             player *= -1;
         }

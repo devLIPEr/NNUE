@@ -1,4 +1,5 @@
 #include <vector>
+#include <chrono>
 
 #include "layer.hpp"
 #include "neuron.hpp"
@@ -163,7 +164,50 @@ namespace std{
                     res2->acumValue(w0->getValue(i, y1), i, 0);
                 }
                 mergeL1();
+                
+                auto start = chrono::steady_clock::now();
                 feedForward();
+                auto end = chrono::steady_clock::now();
+                auto time = chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+                cout << "Time Elapsed(ms): " << time << '\n';
+                rotate();
+                mergeL1();
+            }
+            void changeKingInput(int kR, int kC, int eKR, int eKC, int pR, int pC, int lPR, int lPC){
+                // vector<uint16_t> input(81920, 0);
+                int pieces[10] = {1, 2, 3, 4, 5, -1, -2, -3, -4, -5};
+                for(int i = 0; i < 10; i++){
+                    int pID = pieces[i];
+                    if(pID < 0){
+                        pID *= -1;
+                        pID += 5;
+                    }
+                    pID--;
+
+                    int x = kR*5120 + kC*640 + pID * 64 + lPR*8 + lPC;//was
+                    int y = kR*5120 + kC*640 + pID * 64 + pR*8 + pC;//is
+
+                    int x1 = (eKR*5120 + eKC*640 + pID * 64 + lPR*8 + lPC);
+                    int y1 = (eKR*5120 + eKC*640 + pID * 64 + pR*8 + pC);
+
+                    // input.at(x) = 0;
+                    // input.at(y) = 1;
+                    // input.at(x1) = 0;
+                    // input.at(y1) = 1;
+                    for(int i = 0; i < 256; i++){
+                        res1->acumValue(-w0->getValue(i, x), i, 0);
+                        res1->acumValue(w0->getValue(i, y), i, 0);
+                        res2->acumValue(-w0->getValue(i, x1), i, 0);
+                        res2->acumValue(w0->getValue(i, y1), i, 0);
+                    }
+                }
+                mergeL1();
+                
+                auto start = chrono::steady_clock::now();
+                feedForward();
+                auto end = chrono::steady_clock::now();
+                auto time = chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+                cout << "Time Elapsed(ms): " << time << '\n';
                 rotate();
                 mergeL1();
             }
